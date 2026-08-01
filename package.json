@@ -45,6 +45,7 @@
 		"wrangler": "^4.118.0"
 	},
 	"dependencies": {
-		"@fontsource-variable/plus-jakarta-sans": "^5.3.0"
+		"@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+		"@lucide/svelte": "^1.28.0"
 	}
 }
