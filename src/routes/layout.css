@@ -1,33 +1,54 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/plus-jakarta-sans';
 
-@layer components {
-    .container {
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 1rem;  /* px-4 */
-        padding-right: 1rem;
+@theme {
+    --font-sans: 'Plus Jakarta Sans Variable', sans-serif;
 
-        @media (min-width: 640px) {
-            padding-left: 1.5rem; /* sm:px-6 */
-            padding-right: 1.5rem;
-        }
+    --color-background: var(--color-slate-50);
+    --color-surface: var(--color-white);
+    --color-surface-hover: var(--color-slate-100);
 
-        @media (min-width: 1024px) {
-            padding-left: 2rem; /* lg:px-8 */
-            padding-right: 2rem;
-        }
+    --color-border-subtle: var(--color-slate-200);
+
+    --color-txt-primary: var(--color-slate-900);
+    --color-txt-secondary: var(--color-slate-500);
+
+    --color-sky-accent: var(--color-cyan-600);
+}
+
+@layer base {
+    .dark {
+        color-scheme: dark;
+
+        --color-background: var(--color-gray-950);
+        --color-surface: var(--color-gray-900);
+        --color-surface-hover: var(--color-gray-800);
+
+        --color-border-subtle: var(--color-gray-800);
+
+        --color-txt-primary: var(--color-white);
+        --color-txt-secondary: var(--color-slate-400);
+
+        --color-sky-accent: var(--color-cyan-400);
+    }
+
+    body {
+        background-color: var(--color-background);
+        color: var(--color-txt-primary);
+        font-family: var(--font-sans);
+        transition: background-color 0.2s ease, color 0.2s ease;
     }
 }
 
-@theme {
-    --color-background: var(--color-gray-950);
-    --color-foreground: #ffffff;
-    --font-sans: 'Plus Jakarta Sans Variable', sans-serif;
-}
+@utility container {
+    margin-inline: auto;
+    padding-inline: 1rem;
 
-body {
-    background: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
+    @media (width >= 640px) {
+        padding-inline: 1.5rem;
+    }
+
+    @media (width >= 1024px) {
+        padding-inline: 2rem;
+    }
 }
