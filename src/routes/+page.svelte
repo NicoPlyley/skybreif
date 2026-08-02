@@ -2,9 +2,66 @@
 	import { MetricTile } from '$lib/components';
 	import { Search } from '@lucide/svelte';
 	import { AirportSearch } from '$lib/components';
-	import type { AirportResult } from '$lib/types';
+	import type { AirportResult, Metar } from '$lib/types';
 
 	let selectedAirport = $state<AirportResult | null>(null);
+	let nearbyAirports = $state<AirportResult[]>([]);
+	let metar = $state<Metar | null>(null);
+
+	const flightCategoryStyles: Record<string, string> = {
+		VFR: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500',
+		MVFR: 'bg-blue-500/10 border-blue-500/30 text-blue-500',
+		IFR: 'bg-red-500/10 border-red-500/30 text-red-500',
+		LIFR: 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-500'
+	};
+
+	const updateSelectedAirport = (airport: AirportResult) => (selectedAirport = airport);
+
+	const fetchMetar = async (icao: string, controller: AbortController): Promise<void> => {
+		try {
+			const res = await fetch(`/api/metar/${icao}`, {
+				signal: controller.signal
+			});
+			const data = (await res.json()) as Metar;
+
+			if (data) metar = data;
+		} catch (err) {
+			if ((err as Error).name !== 'AbortError') {
+				console.error('Metar failed', err);
+			}
+		}
+	};
+
+	$effect(() => {
+		const controller = new AbortController();
+		if (!selectedAirport) {
+			nearbyAirports = [];
+			metar = null;
+			return;
+		}
+
+		const icao = selectedAirport.icao;
+
+		const timer = setTimeout(async () => {
+			try {
+				const res = await fetch(`/api/airports/${icao}/nearby`, {
+					signal: controller.signal
+				});
+				nearbyAirports = await res.json();
+
+				await fetchMetar(icao, controller);
+			} catch (err) {
+				if ((err as Error).name !== 'AbortError') {
+					console.error('Search failed', err);
+				}
+			}
+		});
+
+		return () => {
+			clearTimeout(timer);
+			controller.abort();
+		};
+	});
 </script>
 
 <div class="container">
@@ -13,32 +70,42 @@
 			<AirportSearch bind:selectedAirport />
 
 			{#if selectedAirport}
-				<div
-					class="flex flex-wrap items-center gap-4 rounded-2xl border border-border-subtle bg-background px-4 py-3"
-				>
-					<div class="flex items-center gap-1.5">
-						<p class="rounded-xl bg-sky-accent px-3 py-1.5 font-mono text-sm font-bold text-white">
-							{selectedAirport.icao}
+				<div class="flex items-center gap-3">
+					<div class="leading-tight">
+						<h2 class="text-sm font-medium text-txt-primary">{selectedAirport.name}</h2>
+						<p class="text-xs text-txt-secondary">
+							Elevation: {selectedAirport.elevation.toLocaleString()}ft MSL
 						</p>
-						{#if selectedAirport.iata}
-							<p
-								class="rounded-xl border border-border-subtle px-3 py-1.5 font-mono text-sm font-bold text-txt-secondary"
-							>
-								{selectedAirport.iata}
-							</p>
-						{/if}
 					</div>
 
-					<h2 class="text-sm font-medium text-txt-primary">{selectedAirport.name}</h2>
-
-					<div class="ml-auto flex items-baseline gap-1 border-l border-border-subtle pl-4">
-						<span class="text-base font-semibold text-txt-primary">
-							{selectedAirport.elevation.toLocaleString()}
+					{#if metar}
+						<span
+							class="rounded-full border px-2.5 py-1 text-xs font-bold {flightCategoryStyles[
+								metar.fltCat ?? ''
+							] ?? 'border-border-subtle bg-surface text-txt-secondary'}"
+						>
+							{metar.fltCat}
 						</span>
-						<span class="text-xs text-txt-secondary">ft</span>
-					</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
+		{#if nearbyAirports.length > 0}
+			<div class="mt-4 border-t border-border-subtle pt-4">
+				<p class="mb-2 text-xs font-semibold tracking-wide text-txt-secondary uppercase">
+					Nearby Airports
+				</p>
+				<div class="flex flex-wrap gap-2">
+					{#each nearbyAirports as airport (airport.icao)}
+						<button
+							onclick={() => updateSelectedAirport(airport)}
+							class="cursor-pointer rounded-full border border-border-subtle bg-background px-3 py-1.5 font-mono text-sm font-bold text-txt-secondary transition-colors hover:border-sky-accent hover:bg-sky-accent/10 hover:text-sky-accent"
+						>
+							{airport.icao}
+						</button>
+					{/each}
+				</div>
+			</div>
+		{/if}
 	</MetricTile>
 </div>
