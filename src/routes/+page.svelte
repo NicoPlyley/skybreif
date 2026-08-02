@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { MetricTile } from '$lib/components';
 	import { Search } from '@lucide/svelte';
-	import AirportSearch from '$lib/components/AirportSearch.svelte';
+	import { AirportSearch } from '$lib/components';
 </script>
 
 <div class="container">
