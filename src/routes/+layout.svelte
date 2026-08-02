@@ -59,7 +59,7 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<header class="w-full bg-surface py-3">
+<header class="mb-6 w-full bg-surface py-3">
 	<div class="container grid grid-cols-2 md:grid-cols-3">
 		<!-- Left: Logo & Subtitle -->
 		<div class="flex items-center gap-3">
