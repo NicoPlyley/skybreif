@@ -2,9 +2,13 @@
 	import type { AirportResult } from '$lib/types';
 	import { X } from '@lucide/svelte';
 
-	// TODO: Add support for arrow keys and enter to select airport
+	interface Props {
+		selectedAirport: AirportResult | null;
+	}
 
-	let selectedAirport = $state<AirportResult | null>(null);
+	let { selectedAirport = $bindable() }: Props = $props();
+
+	// TODO: Add support for arrow keys and enter to select airport
 	let searchTerm = $state('');
 	let results = $state<AirportResult[]>([]);
 	let searchElement = $state<HTMLDivElement | null>(null);
