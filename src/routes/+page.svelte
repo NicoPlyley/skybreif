@@ -1,6 +1,13 @@
+<script lang="ts">
+	import { MetricTile } from '$lib/components';
+	import { Search } from '@lucide/svelte';
+	import AirportSearch from '$lib/components/AirportSearch.svelte';
+</script>
+
 <div class="container">
-	<h1>Welcome to SvelteKit</h1>
-	<p>
-		Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation
-	</p>
+	<MetricTile title="Airport METAR Inspector" icon={Search}>
+		<div>
+			<AirportSearch />
+		</div>
+	</MetricTile>
 </div>
