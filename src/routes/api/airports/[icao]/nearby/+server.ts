@@ -1,5 +1,6 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import type { AirportResult } from '$lib/types';
+import { json } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ params, platform }) => {
 	const maxDistanceInMiles = 20;
@@ -45,9 +46,23 @@ export const GET: RequestHandler = async ({ params, platform }) => {
              WHERE lat BETWEEN ?3 AND ?4
                AND lon BETWEEN ?5 AND ?6
                AND icao != ?7
+            AND (icao LIKE ?8 OR icao LIKE ?9 OR icao LIKE ?10 OR icao LIKE ?11 OR icao LIKE ?12)
              ORDER BY distance_miles;`
 		)
-		.bind(airport.lat, airport.lon, minDeltaLat, maxDeltaLat, minDeltaLon, maxDeltaLon, icao)
+		.bind(
+			airport.lat,
+			airport.lon,
+			minDeltaLat,
+			maxDeltaLat,
+			minDeltaLon,
+			maxDeltaLon,
+			icao,
+			'K%',
+			'P%',
+			'C%',
+			'M%',
+			'T%'
+		)
 		.all();
 
 	return json(results);
