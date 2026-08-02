@@ -1,10 +1,11 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { PlaneTakeoff } from '@lucide/svelte';
+	import { Moon, PlaneTakeoff, Sun } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { untrack } from 'svelte';
+	import { theme } from '$lib/theme.svelte';
 
 	let { children } = $props();
 
@@ -95,7 +96,7 @@
 		</div>
 
 		<!-- Right: Actions -->
-		<div class="flex items-center justify-end">
+		<div class="flex items-center justify-end gap-4">
 			<nav
 				aria-label="Primary"
 				class="flex rounded-xl border border-border-subtle bg-background p-1"
@@ -113,6 +114,19 @@
 					href={resolve('/brief')}>Route Briefing</a
 				>
 			</nav>
+
+			<!-- Dark Mode Toggle -->
+			<button
+				onclick={() => theme.toggle()}
+				aria-label={theme.current === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+				class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-border-subtle bg-background text-txt-secondary hover:bg-surface-hover"
+			>
+				{#if theme.current === 'dark'}
+					<Sun size={16} />
+				{:else}
+					<Moon size={16} />
+				{/if}
+			</button>
 		</div>
 	</div>
 </header>
