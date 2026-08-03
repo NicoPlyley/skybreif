@@ -3,6 +3,7 @@
 	import { Search } from '@lucide/svelte';
 	import { AirportSearch } from '$lib/components';
 	import type { AirportResult, Metar } from '$lib/types';
+	import { getMetar, getNearbyAirports } from '$lib/api';
 
 	let selectedAirport = $state<AirportResult | null>(null);
 	let nearbyAirports = $state<AirportResult[]>([]);
@@ -17,21 +18,6 @@
 
 	const updateSelectedAirport = (airport: AirportResult) => (selectedAirport = airport);
 
-	const fetchMetar = async (icao: string, controller: AbortController): Promise<void> => {
-		try {
-			const res = await fetch(`/api/metar/${icao}`, {
-				signal: controller.signal
-			});
-			const data = (await res.json()) as Metar;
-
-			if (data) metar = data;
-		} catch (err) {
-			if ((err as Error).name !== 'AbortError') {
-				console.error('Metar failed', err);
-			}
-		}
-	};
-
 	$effect(() => {
 		const controller = new AbortController();
 		if (!selectedAirport) {
@@ -43,18 +29,8 @@
 		const icao = selectedAirport.icao;
 
 		const timer = setTimeout(async () => {
-			try {
-				const res = await fetch(`/api/airports/${icao}/nearby`, {
-					signal: controller.signal
-				});
-				nearbyAirports = await res.json();
-
-				await fetchMetar(icao, controller);
-			} catch (err) {
-				if ((err as Error).name !== 'AbortError') {
-					console.error('Search failed', err);
-				}
-			}
+			metar = await getMetar(icao, controller);
+			nearbyAirports = await getNearbyAirports(icao, controller);
 		});
 
 		return () => {
