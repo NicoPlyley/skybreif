@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { AirportResult } from '$lib/types';
 	import { X } from '@lucide/svelte';
+	import { getAirports } from '$lib/api';
 
 	interface Props {
 		selectedAirport: AirportResult | null;
@@ -26,17 +27,8 @@
 		const controller = new AbortController();
 
 		const timer = setTimeout(async () => {
-			try {
-				const res = await fetch(`/api/airports?q=${encodeURIComponent(term)}`, {
-					signal: controller.signal
-				});
-				results = await res.json();
-				searchIsOpen = true;
-			} catch (err) {
-				if ((err as Error).name !== 'AbortError') {
-					console.error('Search failed', err);
-				}
-			}
+			searchIsOpen = true;
+			results = await getAirports(term, controller);
 		}, 250);
 
 		return () => {
