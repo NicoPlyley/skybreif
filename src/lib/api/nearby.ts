@@ -1,6 +1,9 @@
 import type { AirportResult } from '$lib/types';
 
-const getNearbyAirports = async (icao: string, controller: AbortController) => {
+const getNearbyAirports = async (
+	icao: string,
+	controller: AbortController
+): Promise<AirportResult[]> => {
 	let nearbyAirports: AirportResult[] = [];
 
 	try {
