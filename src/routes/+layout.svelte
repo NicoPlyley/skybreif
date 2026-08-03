@@ -2,14 +2,11 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { Moon, PlaneTakeoff, Sun } from '@lucide/svelte';
-	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
 	import { untrack } from 'svelte';
 	import { theme } from '$lib/theme.svelte';
 
 	let { children } = $props();
 
-	let isHome = $derived(page.url.pathname === '/');
 	let currentTime = $state<Date | null>(null);
 
 	$effect(() => {
@@ -95,27 +92,8 @@
 			</div>
 		</div>
 
-		<!-- Right: Actions -->
-		<div class="flex items-center justify-end gap-4">
-			<nav
-				aria-label="Primary"
-				class="flex rounded-xl border border-border-subtle bg-background p-1"
-			>
-				<a
-					aria-current={isHome ? 'page' : undefined}
-					class="block rounded-lg px-3 py-1.5 {isHome &&
-						'border border-sky-accent/30 bg-sky-accent/10 text-sky-accent'}"
-					href={resolve('/')}>Airport Lookup</a
-				>
-				<a
-					aria-current={!isHome ? 'page' : undefined}
-					class="block rounded-lg px-3 py-1.5 {!isHome &&
-						'border border-sky-accent/30 bg-sky-accent/10 text-sky-accent'}"
-					href={resolve('/brief')}>Route Briefing</a
-				>
-			</nav>
-
-			<!-- Dark Mode Toggle -->
+		<!-- Dark Mode Toggle -->
+		<div class="flex justify-end">
 			<button
 				onclick={() => theme.toggle()}
 				aria-label={theme.current === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
